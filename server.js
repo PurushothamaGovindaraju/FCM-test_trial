@@ -1,31 +1,39 @@
+// Import necessary modules
 const express = require("express");
-const axios = require("axios");
+const admin = require("firebase-admin");
 const vars = require("./constants/vars");
+
 const app = express();
 app.use(express.json());
 
-const generateAccessToken = require("./helpers/fcm-authentication");
+// Initialize Firebase Admin SDK
+const serviceAccount = require("./fcm-testing-trial.json");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 
-app.post("/sendNotification", async (req, res) => {
-  const fcmUrl = `https://fcm.googleapis.com/v1/projects/${vars.projectId}/messages:send`;
+const messaging = admin.messaging();
 
-  console.log(req.body);
-  throw Error;
+// Route to send a message
+app.post("/sendNotification", (req, res) => {
+  const message = {
+    data: {
+      score: "850",
+      time: "2:45",
+    },
+    topic: "GurinTest",
+  };
 
-  try {
-    // retrieving token
-    const accessToken = await generateAccessToken();
-    const response = await axios.post(fcmUrl, req.body, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
+  messaging
+    .send(message)
+    .then((response) => {
+      console.log("Successfully sent message:", response);
+      res.send("Message sent successfully");
+    })
+    .catch((error) => {
+      console.error("Error sending message:", error);
+      res.status(500).send("Error sending message");
     });
-    res.status(200).json(response.data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Failed to send notification.");
-  }
 });
 
 const PORT = vars.port || 3000;
