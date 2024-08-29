@@ -2,6 +2,7 @@
 .env
 
 # Ignore node_modules directory (for Node.js projects)
+node_modules
 node_modules/
 
 # Ignore log files
