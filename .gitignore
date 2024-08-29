@@ -1,0 +1,11 @@
+# Ignore the .env file
+.env
+
+# Ignore node_modules directory (for Node.js projects)
+node_modules/
+
+# Ignore log files
+*.log
+
+# Ignore specific files or directories
+fcm-testing-trial.json
